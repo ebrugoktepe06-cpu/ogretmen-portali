@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Öğretmen & Öğrenci Bilgi Portalı</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome İkonlar -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .active-tab {
+      border-bottom: 3px solid #3b82f6;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Üst Bar / Navigasyon -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
+      <div class="flex items-center space-x-3">
+        <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md">
+          <i class="fa-solid fa-chalkboard-user text-xl"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight text-slate-900">Eğitim Portalı</h1>
+          <p class="text-xs text-slate-500">2024 - 2025 Eğitim Öğretim Yılı</p>
+        </div>
+      </div>
+
+      <!-- Sayfa Geçiş Sekmeleri -->
+      <nav class="flex space-x-2">
+        <button onclick="switchView('teacher')" id="btn-teacher" class="active-tab px-4 py-2 text-sm flex items-center space-x-2 transition">
+          <i class="fa-solid fa-user-tie"></i>
+          <span>Öğretmen Paneli</span>
+        </button>
+        <button onclick="switchView('student')" id="btn-student" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-800 flex items-center space-x-2 transition">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>Öğrenci Portalı</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ANA İÇERİK ALANI -->
+  <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
+
+    <!-- ==================== 1. ÖĞRETMEN PANELİ ==================== -->
+    <div id="teacher-view" class="space-y-6">
+      
+      <!-- Hoş Geldin Kartı -->
+      <div class="bg-gradient-to-r from-blue-700 to-indigo-700 rounded-2xl p-6 text-white shadow-md flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold mb-1">Hoş Geldiniz, Hocam 👋</h2>
+          <p class="text-blue-100 text-sm">Gününüzü planlayın, notlarınızı alın ve ders programınızı kontrol edin.</p>
+        </div>
+        <div class="hidden md:block text-right">
+          <span class="bg-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-sm" id="current-date">Pazartesi</span>
+        </div>
+      </div>
+
+      <!-- Izgara Bölümü: Yapılacaklar & Günlük Dersler -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Günlük Ders Programım -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm md:col-span-1">
+          <h3 class="font-bold text-slate-800 flex items-center space-x-2 mb-4">
+            <i class="fa-regular fa-clock text-blue-600"></i>
+            <span>Bugünkü Dersler</span>
+          </h3>
+          <ul class="space-y-3 text-sm">
+            <li class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="font-semibold text-slate-700">08:30 - 09:10</span>
+              <span class="text-blue-600 font-medium">9-A (Matematik)</span>
+            </li>
+            <li class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="font-semibold text-slate-700">09:20 - 10:00</span>
+              <span class="text-blue-600 font-medium">9-B (Matematik)</span>
+            </li>
+            <li class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="font-semibold text-slate-700">11:00 - 11:40</span>
+              <span class="text-blue-600 font-medium">10-C (Geometri)</span>
+            </li>
+            <li class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="font-semibold text-slate-700">13:30 - 14:10</span>
+              <span class="text-amber-600 font-medium">Nöbet (2. Kat)</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Yapılacaklar / Görevler (Local Storage ile kalıcı) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm md:col-span-2">
+          <h3 class="font-bold text-slate-800 flex items-center space-x-2 mb-4">
+            <i class="fa-solid fa-list-check text-indigo-600"></i>
+            <span>Günlük Görevlerim & Notlar</span>
+          </h3>
+
+          <div class="flex gap-2 mb-4">
+            <input type="text" id="todo-input" placeholder="Yeni görev ekle (Örn: Sınav kağıtlarını oku)..." 
+                   class="flex-1 border border-slate-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="addTodo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition">
+              Ekle
+            </button>
+          </div>
+
+          <ul id="todo-list" class="space-y-2 max-h-56 overflow-y-auto pr-1 text-sm">
+            <!-- Görevler buraya JS ile dinamik gelecek -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Hızlı Bağlantılar & Öğrenci Yönetim Araçları -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4 flex items-center space-x-2">
+          <i class="fa-solid fa-link text-emerald-600"></i>
+          <span>Hızlı Erişim Bağlantıları</span>
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <a href="https://mebbis.meb.gov.tr" target="_blank" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition group">
+            <i class="fa-solid fa-school text-xl text-slate-600 group-hover:text-blue-600 mb-1"></i>
+            <p class="text-xs font-semibold text-slate-700">MEBBİS Giriş</p>
+          </a>
+          <a href="https://e-okul.meb.gov.tr" target="_blank" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition group">
+            <i class="fa-solid fa-id-card text-xl text-slate-600 group-hover:text-blue-600 mb-1"></i>
+            <p class="text-xs font-semibold text-slate-700">e-Okul Sistemi</p>
+          </a>
+          <a href="https://eba.gov.tr" target="_blank" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition group">
+            <i class="fa-solid fa-laptop-file text-xl text-slate-600 group-hover:text-blue-600 mb-1"></i>
+            <p class="text-xs font-semibold text-slate-700">EBA Platformu</p>
+          </a>
+          <a href="https://drive.google.com" target="_blank" class="p-4 bg-slate-50 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition group">
+            <i class="fa-brands fa-google-drive text-xl text-slate-600 group-hover:text-blue-600 mb-1"></i>
+            <p class="text-xs font-semibold text-slate-700">Ders Notları Drive</p>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 2. ÖĞRENCİ PORTALİ ==================== -->
+    <div id="student-view" class="hidden space-y-6">
+
+      <!-- Öğrenci Karşılama Panosu -->
+      <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl p-6 text-white shadow-md">
+        <h2 class="text-2xl font-bold mb-1">Sevgili Öğrenciler, Hoş Geldiniz! 🎓</h2>
+        <p class="text-emerald-100 text-sm">Buradan haftalık ödevlerinizi, duyuruları ve ders kaynaklarını takip edebilirsiniz.</p>
+      </div>
+
+      <!-- Güncel Duyurular -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-slate-800 flex items-center space-x-2 mb-4">
+          <i class="fa-solid fa-bullhorn text-amber-500"></i>
+          <span>Önemli Duyurular</span>
+        </h3>
+        <div class="space-y-3">
+          <div class="p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl">
+            <p class="text-xs text-amber-700 font-semibold">12 Kasım 2024</p>
+            <p class="text-sm font-medium text-amber-900">1. Dönem 1. Ortak Sınav takvimi panolara asılmıştır. Konu dağılımına kaynaklar kısmından ulaşabilirsiniz.</p>
+          </div>
+          <div class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded-r-xl">
+            <p class="text-xs text-blue-700 font-semibold">05 Kasım 2024</p>
+            <p class="text-sm font-medium text-blue-900">Proje görevi seçimi için formlar bu hafta sonuna kadar teslim edilmelidir.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Ödev Listesi -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h3 class="font-bold text-slate-800 flex items-center space-x-2 mb-4">
+            <i class="fa-solid fa-book-open text-blue-600"></i>
+            <span>Aktif Ödevler</span>
+          </h3>
+          <ul class="space-y-3 text-sm">
+            <li class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center">
+              <div>
+                <p class="font-semibold text-slate-800">Üslü Sayılar Testi (Sayfa 45-48)</p>
+                <p class="text-xs text-rose-500 font-medium">Son Teslim: Cuma 17:00</p>
+              </div>
+              <span class="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-lg text-xs font-semibold">Önemli</span>
+            </li>
+            <li class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center">
+              <div>
+                <p class="font-semibold text-slate-800">Fonksiyonlar Örnek Problem Çözümü</p>
+                <p class="text-xs text-slate-500">Son Teslim: Gelecek Salı</p>
+              </div>
+              <span class="bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-semibold">Normal</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Ders Materyalleri / İndirme Alanı -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <h3 class="font-bold text-slate-800 flex items-center space-x-2 mb-4">
+            <i class="fa-solid fa-folder-open text-purple-600"></i>
+            <span>Ders Materyalleri & PDF'ler</span>
+          </h3>
+          <ul class="space-y-3 text-sm">
+            <li class="flex items-center justify-between p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition">
+              <div class="flex items-center space-x-3">
+                <i class="fa-regular fa-file-pdf text-red-500 text-xl"></i>
+                <div>
+                  <p class="font-semibold text-slate-800">1. Ünite Özet Fasikülü.pdf</p>
+                  <p class="text-xs text-slate-400">2.4 MB</p>
+                </div>
+              </div>
+              <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold text-xs flex items-center space-x-1">
+                <span>İndir</span>
+                <i class="fa-solid fa-arrow-down"></i>
+              </a>
+            </li>
+            <li class="flex items-center justify-between p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition">
+              <div class="flex items-center space-x-3">
+                <i class="fa-regular fa-file-lines text-blue-500 text-xl"></i>
+                <div>
+                  <p class="font-semibold text-slate-800">Sınav Çalışma Soruları.pdf</p>
+                  <p class="text-xs text-slate-400">1.1 MB</p>
+                </div>
+              </div>
+              <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold text-xs flex items-center space-x-1">
+                <span>İndir</span>
+                <i class="fa-solid fa-arrow-down"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+    Öğretmen & Öğrenci Yönetim Portalı &bull; GitHub Pages ile barındırılmaktadır.
+  </footer>
+
+  <!-- Etkileşim Scriptleri -->
+  <script>
+    // Sekme Değiştirme
+    function switchView(role) {
+      const teacherView = document.getElementById('teacher-view');
+      const studentView = document.getElementById('student-view');
+      const btnTeacher = document.getElementById('btn-teacher');
+      const btnStudent = document.getElementById('btn-student');
+
+      if (role === 'teacher') {
+        teacherView.classList.remove('hidden');
+        studentView.classList.add('hidden');
+        btnTeacher.className = "active-tab px-4 py-2 text-sm flex items-center space-x-2 transition";
+        btnStudent.className = "px-4 py-2 text-sm text-slate-500 hover:text-slate-800 flex items-center space-x-2 transition";
+      } else {
+        teacherView.classList.add('hidden');
+        studentView.classList.remove('hidden');
+        btnStudent.className = "active-tab px-4 py-2 text-sm flex items-center space-x-2 transition";
+        btnTeacher.className = "px-4 py-2 text-sm text-slate-500 hover:text-slate-800 flex items-center space-x-2 transition";
+      }
+    }
+
+    // Görev Listesi Yönetimi (Local Storage)
+    let todos = JSON.parse(localStorage.getItem('teacher_todos')) || [
+      { text: "9-A sınav kağıtlarını sisteme gir", done: false },
+      { text: "Velilerle toplantı planı hazırla", done: true }
+    ];
+
+    function saveAndRenderTodos() {
+      localStorage.setItem('teacher_todos', JSON.stringify(todos));
+      const list = document.getElementById('todo-list');
+      list.innerHTML = '';
+
+      todos.forEach((todo, idx) => {
+        const item = document.createElement('li');
+        item.className = "flex justify-between items-center p-2.5 rounded-xl border border-slate-100 bg-slate-50";
+        item.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <input type="checkbox" ${todo.done ? 'checked' : ''} onchange="toggleTodo(${idx})" class="rounded text-blue-600 focus:ring-blue-500">
+            <span class="${todo.done ? 'line-through text-slate-400' : 'text-slate-700'}">${todo.text}</span>
+          </div>
+          <button onclick="removeTodo(${idx})" class="text-rose-500 hover:text-rose-700 px-2 py-1 text-xs">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function addTodo() {
+      const input = document.getElementById('todo-input');
+      if (input.value.trim() === '') return;
+      todos.push({ text: input.value.trim(), done: false });
+      input.value = '';
+      saveAndRenderTodos();
+    }
+
+    function toggleTodo(index) {
+      todos[index].done = !todos[index].done;
+      saveAndRenderTodos();
+    }
+
+    function removeTodo(index) {
+      todos.splice(index, 1);
+      saveAndRenderTodos();
+    }
+
+    // Sayfa açıldığında görevleri yükle ve tarihi göster
+    window.onload = function() {
+      saveAndRenderTodos();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('current-date').innerText = new Date().toLocaleDateString('tr-TR', options);
+    };
+  </script>
+</body>
+</html>
